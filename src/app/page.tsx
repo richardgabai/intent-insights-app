@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Lightbulb, Bot } from "lucide-react";
+import { Lightbulb, Bot, Hash, User, Building, Mail, Phone, Tag } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { SummarizeIntentOutput } from "@/ai/flows/intent-summarization";
 import { IntentForm } from "@/components/intent-form";
 import { SaveButton } from "@/components/save-button";
+import { Badge } from "@/components/ui/badge";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -56,6 +57,22 @@ export default function Home() {
                   <h3 className="font-semibold mb-2 text-foreground/90">Summary</h3>
                   <p className="text-muted-foreground leading-relaxed">{result.summary}</p>
                 </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-semibold text-foreground/90 mb-2 flex items-center gap-2"><Tag className="w-4 h-4" /> Intent Type</h4>
+                    <Badge variant="secondary">{result.intentType}</Badge>
+                  </div>
+                  <div>
+                     <h4 className="font-semibold text-foreground/90 mb-2 flex items-center gap-2"><Hash className="w-4 h-4" /> Keywords</h4>
+                     <div className="flex flex-wrap gap-2">
+                      {result.keywords.map((keyword, index) => (
+                        <Badge key={index} variant="outline">{keyword}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <h3 className="font-semibold mb-3 text-foreground/90">Potential Reasons for Purchase</h3>
                   <ul className="space-y-3">
@@ -78,6 +95,25 @@ export default function Home() {
                     ))}
                   </ul>
                 </div>
+                
+                {result.contacts && result.contacts.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-3 text-foreground/90">Contacts Identified</h3>
+                    <div className="space-y-4">
+                      {result.contacts.map((contact, index) => (
+                        <div key={index} className="p-3 bg-secondary/50 rounded-md border">
+                          <ul className="space-y-2 text-sm text-muted-foreground">
+                            {contact.name && <li className="flex items-center gap-2"><User className="w-4 h-4 text-accent" /> {contact.name}</li>}
+                            {contact.company && <li className="flex items-center gap-2"><Building className="w-4 h-4 text-accent" /> {contact.company}</li>}
+                            {contact.email && <li className="flex items-center gap-2"><Mail className="w-4 h-4 text-accent" /> {contact.email}</li>}
+                            {contact.phone && <li className="flex items-center gap-2"><Phone className="w-4 h-4 text-accent" /> {contact.phone}</li>}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
               </CardContent>
               <CardFooter>
                 <SaveButton insight={result} />
@@ -109,6 +145,20 @@ function ResultsSkeleton() {
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-4/5 mt-2" />
           </div>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Skeleton className="h-5 w-24 mb-2" />
+                <Skeleton className="h-6 w-32" />
+              </div>
+              <div>
+                 <Skeleton className="h-5 w-24 mb-2" />
+                 <div className="flex flex-wrap gap-2">
+                  <Skeleton className="h-6 w-20" />
+                  <Skeleton className="h-6 w-24" />
+                  <Skeleton className="h-6 w-16" />
+                </div>
+              </div>
+            </div>
           <div>
             <Skeleton className="h-5 w-56 mb-3" />
             <div className="space-y-3">
@@ -120,11 +170,11 @@ function ResultsSkeleton() {
                 <Skeleton className="w-5 h-5 mt-0.5 rounded-full" />
                 <Skeleton className="h-4 w-11/12" />
               </div>
-              <div className="flex items-start gap-3">
-                <Skeleton className="w-5 h-5 mt-0.5 rounded-full" />
-                <Skeleton className="h-4 w-full" />
-              </div>
             </div>
+          </div>
+          <div>
+            <Skeleton className="h-5 w-40 mb-3" />
+            <Skeleton className="h-20 w-full" />
           </div>
         </CardContent>
       </Card>
