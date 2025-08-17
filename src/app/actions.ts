@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import { refineSearchQueries } from '@/ai/flows/query-refinement';
 import { summarizeIntent, type SummarizeIntentOutput } from '@/ai/flows/intent-summarization';
+import { saveInsight as saveInsightToDb } from '@/services/firestore';
 
 const insightSchema = z.object({
   product: z.string().min(2, { message: 'Product must be at least 2 characters.' }),
@@ -51,5 +52,21 @@ export async function getIntentInsights(
     console.error(e);
     const errorMessage = e instanceof Error ? e.message : 'An unexpected error occurred.';
     return { error: `Analysis failed: ${errorMessage}` };
+  }
+}
+
+export async function saveInsight(
+  insight: SummarizeIntentOutput
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const result = await saveInsightToDb(insight);
+    if (result.success) {
+      return { success: true };
+    }
+    return { success: false, error: result.error };
+  } catch (e) {
+    console.error(e);
+    const errorMessage = e instanceof Error ? e.message : 'An unexpected error occurred.';
+    return { success: false, error: `Failed to save insight: ${errorMessage}` };
   }
 }

@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { Lightbulb, Bot } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { SummarizeIntentOutput } from "@/ai/flows/intent-summarization";
 import { IntentForm } from "@/components/intent-form";
+import { SaveButton } from "@/components/save-button";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -78,6 +79,9 @@ export default function Home() {
                   </ul>
                 </div>
               </CardContent>
+              <CardFooter>
+                <SaveButton insight={result} />
+              </CardFooter>
             </Card>
           </div>
         )}
